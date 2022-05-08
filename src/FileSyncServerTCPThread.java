@@ -9,7 +9,9 @@ import java.net.Socket;
  */
 
 public class FileSyncServerTCPThread extends Thread {
+    private static final String TAG = "FileSyncServerTCPThread";
     private Socket socket = null;
+    private static Message message;
 
     public FileSyncServerTCPThread(Socket socket) {
         super("FileSyncServerTCPThread");
@@ -17,23 +19,26 @@ public class FileSyncServerTCPThread extends Thread {
     }
 
     public void run() {
+        Message msg = new Message();
+        final String METHOD_NAME = "run";
         try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
         ) {
-            String inputLine, outputLine;
+            String clientRequest;
             FileSyncTCPProtocol fsp = new FileSyncTCPProtocol();
-            outputLine = fsp.processInput(null);
-            out.println(outputLine);
-
-            while ((inputLine = in.readLine()) != null) {
-                outputLine = fsp.processInput(inputLine);
-                out.println(outputLine);
-                if (outputLine.equals("exit"))
+            while ((clientRequest = in.readLine()) != null) {
+                msg.printToTerminal(clientRequest);
+                msg = fsp.processInput(clientRequest);
+                if (msg.getMessage().equalsIgnoreCase("exit")) {
                     break;
+                } else {
+                    out.println(msg.getMessage());
+                }
             }
             socket.close();
         } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
+            msg.setErrorMessage(TAG, METHOD_NAME, "IOException", e.getMessage());
+            msg.printToTerminal(message.getMessage());
         }
     }
 }

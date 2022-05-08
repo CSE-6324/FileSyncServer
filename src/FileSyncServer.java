@@ -6,20 +6,15 @@ import java.net.ServerSocket;
  */
 
 public class FileSyncServer {
+    private static Message msg;
     public static void main (String[] args) throws IOException {
-        if (args.length != 1) {
-            System.out.println("Usage: java FileSyncServer <port number>");
-            System.exit(1);
-        }
-        int portNumber = Integer.parseInt(args[0]);
         boolean listening = true;
-
-        try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
+        try (ServerSocket tcpServerSocket = new ServerSocket(PrgUtility.TCP_PORT_NUM)) {
             while (listening) {
-                new FileSyncServerTCPThread(serverSocket.accept()).start();
+                new FileSyncServerTCPThread(tcpServerSocket.accept()).start();
             }
         }catch (IOException e) {
-            System.err.println("Could not listen on port " + portNumber);
+            msg.printToTerminal("Could not listen for TCP connection on port " + PrgUtility.TCP_PORT_NUM);
             System.exit(-1);
         }
     }
