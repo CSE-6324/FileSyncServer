@@ -4,11 +4,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class FileSyncServerThread extends Thread {
+/**
+ * @author sharif
+ */
+
+public class FileSyncServerTCPThread extends Thread {
     private Socket socket = null;
 
-    public FileSyncServerThread(Socket socket) {
-        super("FileSyncServerThread");
+    public FileSyncServerTCPThread(Socket socket) {
+        super("FileSyncServerTCPThread");
         this.socket = socket;
     }
 
@@ -17,7 +21,7 @@ public class FileSyncServerThread extends Thread {
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
         ) {
             String inputLine, outputLine;
-            FileSyncProtocol fsp = new FileSyncProtocol();
+            FileSyncTCPProtocol fsp = new FileSyncTCPProtocol();
             outputLine = fsp.processInput(null);
             out.println(outputLine);
 
