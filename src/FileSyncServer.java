@@ -6,16 +6,16 @@ import java.net.ServerSocket;
  */
 
 public class FileSyncServer {
-    private static Message msg;
     public static void main (String[] args) throws IOException {
+        Message msg = new Message();
         boolean listening = true;
         try (ServerSocket tcpServerSocket = new ServerSocket(PrgUtility.TCP_PORT_NUM)) {
-            System.out.println("> server listening for tcp connections on port: " + PrgUtility.TCP_PORT_NUM);
+            msg.printToTerminal("> server listening for tcp connection(s) on port: " + PrgUtility.TCP_PORT_NUM);
             while (listening) {
                 new FileSyncServerTCPThread(tcpServerSocket.accept()).start();
             }
         }catch (IOException e) {
-            msg.printToTerminal("> could not listen for TCP connection on port " + PrgUtility.TCP_PORT_NUM);
+            msg.printToTerminal("> could not listen for connection on port " + PrgUtility.TCP_PORT_NUM);
             System.exit(-1);
         }
     }

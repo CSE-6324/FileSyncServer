@@ -29,11 +29,7 @@ public class FileSyncServerTCPThread extends Thread {
             out.println(SERVER_LISTENING);
             while ((clientRequest = in.readLine()) != null) {
                 msg = fsp.processInput(clientRequest);
-                if (msg.getMessage().equalsIgnoreCase("exit")) {
-                    break;
-                } else {
-                    out.println(msg.getMessage());
-                }
+                out.println(msg.getMessage());
             }
             socket.close();
         } catch (IOException e) {
