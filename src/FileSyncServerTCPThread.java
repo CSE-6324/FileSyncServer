@@ -10,8 +10,8 @@ import java.net.Socket;
 
 public class FileSyncServerTCPThread extends Thread {
     private static final String TAG = "FileSyncServerTCPThread";
+    private static final String SERVER_LISTENING = "yes";
     private Socket socket = null;
-    private static Message message;
 
     public FileSyncServerTCPThread(Socket socket) {
         super("FileSyncServerTCPThread");
@@ -26,8 +26,8 @@ public class FileSyncServerTCPThread extends Thread {
         ) {
             String clientRequest;
             FileSyncTCPProtocol fsp = new FileSyncTCPProtocol();
+            out.println(SERVER_LISTENING);
             while ((clientRequest = in.readLine()) != null) {
-                msg.printToTerminal(clientRequest);
                 msg = fsp.processInput(clientRequest);
                 if (msg.getMessage().equalsIgnoreCase("exit")) {
                     break;
@@ -38,7 +38,7 @@ public class FileSyncServerTCPThread extends Thread {
             socket.close();
         } catch (IOException e) {
             msg.setErrorMessage(TAG, METHOD_NAME, "IOException", e.getMessage());
-            msg.printToTerminal(message.getMessage());
+            msg.printToTerminal(msg.getMessage());
         }
     }
 }

@@ -6,16 +6,17 @@ public class FileSyncTCPProtocol {
 
     public Message processInput(String clientRequest) {
         Message msg = new Message();
-        String[] requestTokens = clientRequest.split("~");
-        String clientReqCommand = requestTokens[0];
+        String[] requestTokens = clientRequest.split("=");
+        String request = requestTokens[0];
 
-        if (clientReqCommand.equalsIgnoreCase("hello")) {
-            msg.setMessage("Hello Client: " + requestTokens[1]);
+        if (request.equalsIgnoreCase("handshake-client")) {
+            msg.printToTerminal("> connected to client: " + requestTokens[1]);
+            msg.setMessage("handshake-server");
         }
-        else if (clientReqCommand.equalsIgnoreCase("upload")) {
+        else if (request.equalsIgnoreCase("upload")) {
             msg.setMessage("Request to Upload File: " + requestTokens[1]);
-        } else if (clientReqCommand.equalsIgnoreCase("exit")) {
-            msg.setMessage("Bye from Server.");
+        } else if (request.equalsIgnoreCase("exit-client")) {
+            msg.setMessage("exit-server");
         } else {
             msg.setMessage("TODO: rest");
         }
