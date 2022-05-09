@@ -5,7 +5,7 @@ import java.net.ServerSocket;
  * @author sharif
  */
 
-public class FileSyncServer {
+public class FileSyncServerApp {
     public static void main (String[] args) throws IOException {
         Message msg = new Message();
         boolean listening = true;
