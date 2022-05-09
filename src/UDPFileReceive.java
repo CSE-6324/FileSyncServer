@@ -13,7 +13,7 @@ import java.net.InetAddress;
 public class UDPFileReceive implements Runnable {
     private static final String TAG = "UDPFileReceive";
     private final int udpPortNum;
-    private final String fileReceiveFolder;
+    private String fileReceiveFolder;
     private volatile boolean suspendFileReceive;
 
     public UDPFileReceive(int udpPortNum, String fileReceiveFolder) {
@@ -40,8 +40,9 @@ public class UDPFileReceive implements Runnable {
             FileOutputStream outToFile = new FileOutputStream(file);
 
             receiveFile(outToFile, socket);
+            outToFile.close();
         } catch (Exception ex) {
-            msg.setErrorMessage(TAG, METHOD_NAME, "Exception" + ex.getMessage());
+            msg.setErrorMessage(TAG, METHOD_NAME, "Exception",  ex.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
     }

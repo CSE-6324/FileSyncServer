@@ -30,7 +30,7 @@ public enum SyncServer {
         return fileList;
     }
 
-    private String getFileNameFromFileBlockName(String fileBlockName) {
+    public String getFileNameFromFileBlockName(String fileBlockName) {
         // this will only work if the file block name has the
         // following format: fileName_block#.fileExt
         // eg: milkyway_001.jpeg
@@ -61,5 +61,16 @@ public enum SyncServer {
             }
         }
         return fileBlocks;
+    }
+
+    public int getBlockNumberFromFileBlockName(String fileBlockName) {
+        // this will only work if the file block name has the
+        // following format: fileName_block#.fileExt
+        // eg: milkyway_001.jpeg
+        String[] fileBlockNameTokens = fileBlockName.split("\\.");
+        String fileNameWithBlockNum = fileBlockNameTokens[0];
+        String[] fileNameTokens = fileNameWithBlockNum.split("_");
+        int blockNum = Integer.parseInt(fileNameTokens[1]);
+        return blockNum;
     }
 }

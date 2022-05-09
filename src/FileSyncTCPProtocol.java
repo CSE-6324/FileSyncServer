@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 
 /**
  * @author sharif
@@ -31,14 +32,19 @@ public class FileSyncTCPProtocol {
             msg.printToTerminal("port server listening to receive file from client = " + udpPort);
             receiveFileBlockFromClient(udpPort, clientName);
         } else if (request.equalsIgnoreCase("download")) {
-            requestValue = requestTokens[2];
+            String fileBlockName = requestTokens[2];
             String udpRequest = requestTokens[3];
             String udpPortNumStr = requestTokens[4];
-            msg.printToTerminal(clientName + " client download request acknowledged for file: " + requestValue);
+            msg.printToTerminal(clientName + " client download request acknowledged for file: " + fileBlockName);
             msg.printToTerminal("to send file to client server will use requested port = " + udpPortNumStr);
-            serverResponse = "ok";
+
+            String fileName = SyncServer.LOCALHOST.getFileNameFromFileBlockName(fileBlockName);
+            ArrayList<String> allFileBlockNames = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
+            int blockNum = SyncServer.LOCALHOST.getBlockNumberFromFileBlockName(fileBlockName);
+
+            serverResponse = String.format("response=ok=file_name=%s=file_block_name=%s=total_blocks=%s=current_block_num=%s",fileName, fileBlockName, (allFileBlockNames.size()+""), (blockNum+""));
             msg.setMessage(serverResponse);
-            sendFileBlockToClient(Integer.parseInt(udpPortNumStr), clientName, requestValue);
+            sendFileBlockToClient(Integer.parseInt(udpPortNumStr), clientName, fileBlockName);
         }
         return msg;
     }
