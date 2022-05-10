@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class FileSyncTCPProtocol {
     private static final String TAG = "FileSyncTCPProtocol";
-    public Message processInput(String clientRequest) {
+    public synchronized Message processInput(String clientRequest) {
         Message msg = new Message();
         String[] requestTokens = clientRequest.split("=");
         String clientName = requestTokens[0];
@@ -42,7 +42,7 @@ public class FileSyncTCPProtocol {
             ArrayList<String> allFileBlockNames = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
             int blockNum = SyncServer.LOCALHOST.getBlockNumberFromFileBlockName(fileBlockName);
 
-            serverResponse = String.format("response=ok=file_name=%s=file_block_name=%s=total_blocks=%s=current_block_num=%s",fileName, fileBlockName, (allFileBlockNames.size()+""), (blockNum+""));
+            serverResponse = "ok";
             msg.setMessage(serverResponse);
             sendFileBlockToClient(Integer.parseInt(udpPortNumStr), clientName, fileBlockName);
         }
