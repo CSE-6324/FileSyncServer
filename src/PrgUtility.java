@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 public class PrgUtility {
     public static final int TCP_PORT_NUM = 5555;
     public static final String HOST_NAME = "localhost";
+    public static final String PROJECT_FILE_PATH = "/Users/sudiptasharif/repos/FileSyncer/project_files/";
+    public static final String SERVER_LOG_FILE = PROJECT_FILE_PATH + "log_files/server_log.txt";
 
     public static String getFileExtension(String fileName) {
         String extension = "";
