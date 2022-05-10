@@ -14,7 +14,6 @@ public class FileSyncTCPProtocol {
         String[] requestTokens = clientRequest.split("=");
         String clientName = requestTokens[0];
         String request = requestTokens[1];
-        String requestValue;
 
         String serverResponse;
         if (request.equalsIgnoreCase("handshake-client")) {
@@ -24,11 +23,11 @@ public class FileSyncTCPProtocol {
             msg.setMessage(serverResponse);
         }
         else if (request.equalsIgnoreCase("upload")) {
-            requestValue = requestTokens[2];
+            String fileName = requestTokens[2];
             int udpPort = getFreeLocalPort();
             serverResponse = "UDP_PORT=" + udpPort;
             msg.setMessage(serverResponse);
-            msg.printToTerminal(clientName +" client upload request acknowledged for file: " + requestValue);
+            msg.printToTerminal(clientName +" client upload request acknowledged for file: " + fileName);
             msg.printToTerminal("port server listening to receive file from client = " + udpPort);
             receiveFileBlockFromClient(udpPort, clientName);
         } else if (request.equalsIgnoreCase("download")) {
@@ -45,6 +44,16 @@ public class FileSyncTCPProtocol {
             serverResponse = "ok";
             msg.setMessage(serverResponse);
             sendFileBlockToClient(Integer.parseInt(udpPortNumStr), clientName, fileBlockName);
+        } else if (request.equalsIgnoreCase("delete")) {
+            String fileName = requestTokens[2];
+            msg.printToTerminal(clientName +" client delete request acknowledged for file: " + fileName);
+            msg = startDeleteTask(fileName);
+            if (msg.isMessageSuccess()) {
+                serverResponse = "ok";
+            } else {
+                serverResponse = "notok";
+            }
+            msg.setMessage(serverResponse);
         }
         return msg;
     }
@@ -58,7 +67,7 @@ public class FileSyncTCPProtocol {
             return portNum;
         } catch (IOException e) {
             msg.setErrorMessage(TAG, METHOD_NAME, "IOException" + e.getMessage());
-            msg.printToTerminal("");
+            msg.logMsgToFile(msg.getMessage());
         }
         throw new IllegalStateException("could not find a free local port");
     }
@@ -86,6 +95,23 @@ public class FileSyncTCPProtocol {
             fileReceiveThread.start();
         } catch (Exception e) {
             msg.setErrorMessage(TAG, METHOD_NAME, "UnableToReceiveFileFromClient: " + clientName, e.getMessage());
+            msg.logMsgToFile(msg.getMessage());
         }
+    }
+
+    private Message startDeleteTask(String fileName) {
+        final String METHOD_NAME = "startDeleteTask";
+        Message msg = new Message();
+        try {
+            ArrayList<String> fileBlockNameList = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
+            for (String fileBlockName: fileBlockNameList) {
+                File file = new File(SyncServer.LOCALHOST.getServerFolderPath() + "/" + fileBlockName);
+                file.delete();
+            }
+        } catch (Exception e) {
+            msg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
+            msg.logMsgToFile(msg.getMessage());
+        }
+        return msg;
     }
 }
