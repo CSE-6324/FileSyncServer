@@ -1,3 +1,6 @@
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -33,5 +36,15 @@ public class PrgUtility {
             answer = false;
         }
         return answer;
+    }
+
+    public static boolean hasValidUTFChars(byte[] bArray) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+        try {
+            decoder.decode(ByteBuffer.wrap(bArray));
+        } catch (CharacterCodingException ex) {
+            return false;
+        }
+        return true;
     }
 }

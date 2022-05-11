@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Credit: https://gist.github.com/absalomhr/ce11c2e43df517b2571b1dfc9bc9b487
@@ -35,14 +36,13 @@ public class UDPFileSend implements Runnable {
         try (DatagramSocket socket = new DatagramSocket();){
             InetAddress address = InetAddress.getByName(host);
             String fileName = fileToSend.getName();
-            if (PrgUtility.isFileNameValid(fileName) && PrgUtility.hasFileExtension(fileName)) {
+            if (PrgUtility.isFileNameValid(fileName) && PrgUtility.hasFileExtension(fileName) && PrgUtility.hasValidUTFChars(fileName.getBytes(StandardCharsets.UTF_8))) {
                 byte[] fileNameBytes = fileName.getBytes();
                 DatagramPacket fileStatPacket = new DatagramPacket(fileNameBytes, fileNameBytes.length, address, port);
                 socket.send(fileStatPacket);
                 byte[] fileByteArray = readFileToByteArray(fileToSend);
                 sendFile(socket, fileByteArray, address, port);
             }
-
         } catch (Exception ex) {
             consoleMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", ex.getMessage());
             consoleMsg.printToTerminal(consoleMsg.getMessage());
